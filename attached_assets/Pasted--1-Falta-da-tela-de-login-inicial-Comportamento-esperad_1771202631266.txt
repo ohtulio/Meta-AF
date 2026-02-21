@@ -1,0 +1,185 @@
+🔐 1. Falta da tela de login inicial
+
+✔ Comportamento esperado
+
+Ao abrir o app:
+
+Verificar sessão salva
+→ se existir → entrar no app
+→ se não existir → abrir tela login
+
+✔ Estrutura recomendada (React Navigation)
+
+Criar dois fluxos:
+
+AuthStack
+MainTabs
+
+✔ Lógica padrão
+const [user, setUser] = useState(null);
+
+if (!user) {
+  return <AuthStack />;
+}
+
+return <MainTabs />;
+
+✔ MVP simples (sem backend ainda)
+
+Tela com:
+
+Campo telefone
+
+Botão "Entrar"
+
+Salvar telefone no AsyncStorage
+
+Isso já prepara terreno para OTP futuramente.
+
+🧮 2. Campos percentuais aceitando apenas inteiros
+
+Isso acontece porque o input provavelmente está configurado como:
+
+keyboardType="numeric"
+
+
+E/ou usando parseInt().
+
+
+✔ Correção correta
+
+Trocar para:
+
+keyboardType="decimal-pad"
+
+
+E no processamento:
+
+parseFloat(valor)
+
+✔ Validação recomendada
+
+Permitir até duas casas:
+
+const regex = /^\d+(\.\d{0,2})?$/;
+
+⚖️ 3. Média ponderada do leito 
+
+A lógica correta é:
+
+📊 Fórmula
+Média Elemento =
+Σ (% minério no leito × teor do elemento no minério) / 100
+
+✔ Função sugerida
+function calcularMedia(leito, elemento) {
+  let soma = 0;
+
+  leito.forEach(minerio => {
+    soma += minerio.percentual * minerio[elemento];
+  });
+
+  return soma / 100;
+}
+
+✔ Exibição ideal
+
+Mostrar em tempo real conforme usuário digita.
+
+
+
+🚨 4. Validação: Percentual do leito precisa fechar 100%
+
+✔ Regra industrial correta
+Somatório percentuais == 100
+
+✔ Implementação
+const total = leito.reduce(
+  (acc, m) => acc + parseFloat(m.percentual || 0),
+  0
+);
+
+if (total !== 100) {
+  mostrarErro("O total do leito deve ser 100%");
+}
+
+✔ UX recomendada
+
+Mostrar barra visual:
+
+Total do leito: 94% ❌
+Total do leito: 100% ✔
+
+
+📦 5. Campo "Status" do estoque precisa ser personalizável
+
+
+✔ Melhor solução arquitetural
+
+Transformar status em tabela configurável.
+
+✔ Modelo simples
+
+Criar:
+
+Configurações → Status de estoque
+
+
+Usuário pode adicionar:
+
+Disponível
+
+Em análise
+
+Em quarentena
+
+Mistura aprovada
+
+etc
+
+✔ Estrutura no banco
+
+Tabela:
+
+status_estoque
+id
+nome
+cor
+
+
+⭐ Melhorias extras 
+
+📊 1. Versionamento do leito
+
+Leitos mudam com o tempo.
+
+Guardar:
+
+Leito A - versão 1
+Leito A - versão 2
+
+🧩 2. Prevenção de erro operacional
+
+Impedir salvar leito se:
+
+Percentual ≠ 100%
+
+Campo químico vazio
+
+Valor negativo
+
+🧱 3. Modelagem de dados recomendada para leito
+leito {
+  nome
+  status
+  minerios: [
+    {
+      nome
+      percentual
+      Fe
+      SiO2
+      Al2O3
+      ...
+    }
+  ]
+}

@@ -1,0 +1,324 @@
+Quero criar um aplicativo web responsivo (PWA – Progressive Web App) voltado para metalurgia, especificamente para suporte operacional de alto-forno.
+
+O sistema será um MVP inicial, porém estruturado para futuramente suportar autenticação de usuários, assinaturas pagas e armazenamento em nuvem.
+
+O app deve ser desenvolvido utilizando:
+
+Frontend:
+
+* React
+* TailwindCSS
+* Interface otimizada para uso em celular
+* PWA instalável
+
+Backend:
+
+* Python com FastAPI
+
+Banco de dados inicial:
+
+* SQLite local (com possibilidade futura de migração para Supabase ou PostgreSQL)
+
+OCR:
+
+* OpenCV + Tesseract para leitura de tabelas via câmera do celular
+
+---
+
+# 🎯 OBJETIVO DO APLICATIVO
+
+Criar uma ferramenta para auxiliar no controle metalúrgico do alto-forno contendo:
+
+* Cadastro e simulação de leitos de fusão
+* Cálculo automático de correções de escória
+* Registro operacional
+* Gestão de pessoas
+* Controle de tarefas
+* Controle de estoque
+
+---
+
+# 📱 ESTRUTURA DO APP
+
+O aplicativo deve possuir quatro abas principais:
+
+1. Leito de Fusão
+2. Operacional
+3. Pessoas
+4. Tarefas
+5. Estoque
+
+Criar navegação inferior estilo aplicativo mobile.
+
+---
+
+# 🔥 ABA 1 – LEITO DE FUSÃO
+
+Funções:
+
+Permitir cadastro manual e leitura via scan de tabelas contendo:
+
+* Composição do leito de fusão
+* Composição química dos materiais
+* Parâmetros metalúrgicos
+
+Deve permitir:
+
+* Abrir câmera do celular
+* Capturar imagem
+* Aplicar OCR
+* Extrair dados da tabela automaticamente
+* Exibir campos editáveis para validação manual
+* Salvar leitos cadastrados
+* Permitir edição posterior
+* Permitir duplicar leitos para simulação
+
+Campos esperados:
+
+Minérios:
+
+* Percentual no leito
+* Composição química (Fe, SiO2, Al2O3, Mn, P)
+
+Fundentes:
+ - Calcário
+   * Peso
+   * Rendimento CaO
+
+ -Bauxita:
+  * Peso
+  * Teor Al2O3
+
+Combustível:
+ - Base operacional
+ - Combustível adicional (Carvão Coque)
+  * Peso
+
+Sucata
+
+Salvar cada leito com nome e data/horário.
+Para cada leito novo é marcado como simulado ou aplicado, para o aplicado são atribuídos os cálculos de correção.
+
+---
+
+# ⚙️ ABA 2 – OPERACIONAL
+
+Esta aba executa cálculos metalúrgicos utilizando dados do leito selecionado. Na mudança de um leito para outro, são feitas as correções de escória (calcário, bauxita), ou correção de base se alterar o peso do coque.
+
+Deve permitir:
+
+Selecionar leito salvo, leito atual.
+
+Inserir análises reais da escória (manual ou via scan):
+
+* SiO2
+* Al2O3
+* CaO
+* MgO
+* FeO
+* MnO
+* IB
+* IF
+* Si
+* Fechamento
+
+Parâmetros fixos operacionais:
+
+* Meta Si gusa = 0.10
+* Meta Al2O3 escória = 14%
+* Peso lâmina minério = 2200 kg
+* Rendimento Fe = 60%
+* Teor Fe gusa = 95%
+* IB = 0.85
+* Rendimento calcário = 52%
+* Rendimento da bauxita = 45%
+* Carbono fixo do carvão coque = 73%
+---
+
+# 📊 CÁLCULOS QUE DEVEM SER IMPLEMENTADOS
+
+## Produção de gusa
+
+Gusa/carga = (2200 × 0.60) ÷ 0.95
+
+---
+
+## Volume de escória
+
+Vesc = ((Peso calcário × 0.52) + 7) ÷ ((CaO + MgO) × 1.389)
+
+---
+
+## Ajuste de alumina
+
+Calcular:
+
+Al_real = Vesc × (%Al2O3 analisado)
+
+Al_meta = Vesc × 0.14
+
+Déficit Al = Al_meta − Al_real
+
+Quantidade bauxita = Déficit Al ÷ 0.45
+
+Considerar que toda alumina da bauxita vai para escória.
+
+---
+
+## Ajuste calcário por silício
+
+Y = 21.43 × 0.10 − 21.43 × (Si analisado gusa)
+
+Z = Y ÷ 0.52
+
+---
+
+## Ajuste calcário por basicidade
+
+Ajuste = ((Vesc × (CaO + MgO)) ÷ 0.85) − ((Vesc × (CaO + MgO)) ÷ IB analisado)
+
+Converter ajuste CaO para calcário dividindo por 0.52.
+
+# Ajuste de fator via adição ou remoção de coque:
+Coque rate = (Peso coque enfornado * 73%) ÷ Gusa/carga
+Ajsute de fator = Base operacional - Coque rate
+
+---
+
+## Resultados Finais
+
+Somar correção por silício + correção por basicidade. Se resultado for negativo: Adicionar valor em quilos de calcário, e se positivo deve-se subtrair o valor em quilos de calcário.
+
+Mostrar resultado:
+
+* Quantidade calcário a adicionar ou remover
+* Quantidade bauxita a adicionar
+* Quantidade à alterar na base operacional
+
+---
+
+# 💾 Histórico Operacional
+
+Salvar:
+
+* Data
+* Leito utilizado
+* Análises inseridas
+* Resultados calculados
+
+Permitir consulta futura.
+
+---
+
+# 👷 ABA 3 – PESSOAS
+
+Criar sistema simples de presença contendo:
+
+* Nome funcionário
+* Função
+* Status presença (presente, falta, afastado, suspenso)
+* Campo observação
+* Registro por data
+* Lista editável
+
+---
+
+# 🛠 ABA 4 – TAREFAS
+
+Sistema de controle de tarefas operacionais.
+
+Campos:
+
+* Título
+* Descrição
+* Setor
+* Prioridade
+* Status (pendente, andamento, concluída)
+* Responsável
+
+---
+
+# 📦 ABA 5 - ESTOQUE
+
+Sistema de controle de estoque de matéria prima
+
+Campos:
+
+* Nome do material
+* Lote
+* Status
+* Descrição
+* Quantidade
+
+# 📷 OCR E LEITURA DE TABELAS
+
+Implementar:
+
+* Upload de imagem
+* Captura via câmera
+* Uso de Tesseract para leitura
+* Parsing básico para extrair números e colunas
+* Permitir correção manual antes de salvar
+
+---
+
+# 🎨 DESIGN
+
+* Interface estilo aplicativo industrial
+* Layout limpo
+* Tema escuro padrão
+* Botões grandes para uso em área operacional
+* Navegação simples
+
+---
+
+# ⚙️ REQUISITOS TÉCNICOS
+
+Estrutura de pastas organizada:
+
+frontend/
+backend/
+database/
+ocr/
+models/
+
+Criar API REST entre frontend e backend.
+
+---
+
+# 📦 FUTURA EXPANSÃO (Preparar Estrutura)
+
+Preparar código para futura implementação:
+
+* Login por telefone (OTP)
+* Sistema de assinatura mensal
+* Migração para banco Supabase
+* Multiusuário
+* Dashboard analítico
+
+---
+
+# 📱 PWA
+
+Permitir:
+
+* Instalação no celular
+* Uso offline parcial
+* Armazenamento local sincronizável
+
+---
+
+# 📄 DOCUMENTAÇÃO
+
+Gerar README explicando:
+
+* Como rodar localmente
+* Dependências
+* Estrutura do projeto
+* Como adicionar novos cálculos
+
+---
+
+Gerar código completo inicial funcional seguindo estas especificações.
+
+---
