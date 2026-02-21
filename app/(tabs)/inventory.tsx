@@ -130,7 +130,9 @@ export default function InventoryScreen() {
       Alert.alert("Erro", "Selecione um status");
       return;
     }
-    const qty = parseFloat(quantity) || 0;
+    const qtyStr = quantity.replace(",", ".");
+    const qty = parseFloat(qtyStr) || 0;
+    const roundedQty = parseFloat(qty.toFixed(3));
     if (editingItem) {
       await inventoryStorage.update({
         ...editingItem,
@@ -138,7 +140,7 @@ export default function InventoryScreen() {
         lot: lot.trim(),
         status: invStatus,
         description: description.trim(),
-        quantity: qty,
+        quantity: roundedQty,
       });
     } else {
       await inventoryStorage.save({
@@ -146,7 +148,7 @@ export default function InventoryScreen() {
         lot: lot.trim(),
         status: invStatus,
         description: description.trim(),
-        quantity: qty,
+        quantity: roundedQty,
       });
     }
     if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -211,6 +213,7 @@ export default function InventoryScreen() {
   };
 
   const handleDeleteStatus = (status: InventoryStatus) => {
+    if (!status) return;
     const inUse = items.some((item) => item.status.id === status.id);
     if (inUse) {
       Alert.alert("Erro", "Este status esta sendo usado por itens do estoque. Remova ou altere o status dos itens antes de excluir.");

@@ -44,9 +44,11 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 function parseNumericInput(value: string, min: number, max: number): number {
-  const parsed = parseFloat(value);
+  const normalizedValue = value.replace(",", ".");
+  const parsed = parseFloat(normalizedValue);
   if (isNaN(parsed)) return 0;
-  return clamp(parsed, min, max);
+  const clamped = clamp(parsed, min, max);
+  return parseFloat(clamped.toFixed(3));
 }
 
 function computeChemistryAverage(ores: OreComposition[]): LeitoChemistryAverage {

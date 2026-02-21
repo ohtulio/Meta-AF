@@ -68,17 +68,22 @@ export default function OperationalCalcScreen() {
     const leito = leitos.find((l) => l.id === selectedLeitoId);
     if (!leito) return;
 
+    const parseValue = (val: string) => {
+      const parsed = parseFloat(val.replace(",", ".")) || 0;
+      return parseFloat(parsed.toFixed(3));
+    };
+
     const analysis: SlagAnalysis = {
-      sio2: parseFloat(sio2) || 0,
-      al2o3: parseFloat(al2o3) || 0,
-      cao: parseFloat(cao) || 0,
-      mgo: parseFloat(mgo) || 0,
-      feo: parseFloat(feo) || 0,
-      mno: parseFloat(mno) || 0,
-      ib: parseFloat(ib) || 0,
-      if_: parseFloat(if_) || 0,
-      siGusa: parseFloat(siGusa) || 0,
-      closure: parseFloat(closure) || 0,
+      sio2: parseValue(sio2),
+      al2o3: parseValue(al2o3),
+      cao: parseValue(cao),
+      mgo: parseValue(mgo),
+      feo: parseValue(feo),
+      mno: parseValue(mno),
+      ib: parseValue(ib),
+      if_: parseValue(if_),
+      siGusa: parseValue(siGusa),
+      closure: parseValue(closure),
     };
 
     const calc = calculateAll(leito, analysis);
@@ -93,17 +98,22 @@ export default function OperationalCalcScreen() {
     const leito = leitos.find((l) => l.id === selectedLeitoId);
     if (!leito) return;
 
+    const parseValue = (val: string) => {
+      const parsed = parseFloat(val.replace(",", ".")) || 0;
+      return parseFloat(parsed.toFixed(3));
+    };
+
     const analysis: SlagAnalysis = {
-      sio2: parseFloat(sio2) || 0,
-      al2o3: parseFloat(al2o3) || 0,
-      cao: parseFloat(cao) || 0,
-      mgo: parseFloat(mgo) || 0,
-      feo: parseFloat(feo) || 0,
-      mno: parseFloat(mno) || 0,
-      ib: parseFloat(ib) || 0,
-      if_: parseFloat(if_) || 0,
-      siGusa: parseFloat(siGusa) || 0,
-      closure: parseFloat(closure) || 0,
+      sio2: parseValue(sio2),
+      al2o3: parseValue(al2o3),
+      cao: parseValue(cao),
+      mgo: parseValue(mgo),
+      feo: parseValue(feo),
+      mno: parseValue(mno),
+      ib: parseValue(ib),
+      if_: parseValue(if_),
+      siGusa: parseValue(siGusa),
+      closure: parseValue(closure),
     };
 
     await operationalStorage.save({
